@@ -16,20 +16,14 @@ val Beige10 = Color(0xFF201B10)
 val Beige20 = Color(0xFF2E2818)
 val Beige30 = Color(0xFF473E28)
 
-// Green accent
-val Green40 = Color(0xFF2E7D32)
-val Green30 = Color(0xFF1B5E20)
-val Green90 = Color(0xFFC8E6C9)
-val Green80 = Color(0xFFA5D6A7)
+// Gray accent
+val Gray40 = Color(0xFF5A5A5A)
+val Gray30 = Color(0xFF3F3F3F)
+val Gray90 = Color(0xFFE2E2E2)
+val Gray80 = Color(0xFFC4C4C4)
 
 // Blue accent
 val Blue40 = Color(0xFF1E5FA8)
 val Blue30 = Color(0xFF123A66)
 val Blue90 = Color(0xFFD3E4FA)
 val Blue80 = Color(0xFF90CAF9)
-
-// Blue-leaning tertiary (used for the rest countdown ring)
-val TertiaryBlue40 = Color(0xFF1565C0)
-val TertiaryBlue30 = Color(0xFF0D47A1)
-val TertiaryBlue90 = Color(0xFFBBDEFB)
-val TertiaryBlue80 = Color(0xFF82B1FF)
