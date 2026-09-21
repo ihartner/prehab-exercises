@@ -125,7 +125,8 @@ object ExerciseRepository {
                 "Exhale, zip up through your deep core, press through your feet, and bridge your hips up.",
                 "Lower and repeat for the full minute."
             ),
-            durationSeconds = 60
+            durationSeconds = 60,
+            imageRes = R.drawable.ex_8
         ),
         Exercise(
             id = 9,
