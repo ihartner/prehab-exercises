@@ -8,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.prehab.exercises.data.ExerciseRepository
 import com.prehab.exercises.model.Exercise
 import com.prehab.exercises.model.ExerciseType
+import com.prehab.exercises.progress.ProgressRepository
 import com.prehab.exercises.voice.VoiceGuide
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -24,6 +25,7 @@ class ExerciseSessionViewModel(
 
     private val exercises: List<Exercise> = ExerciseRepository.all
     private val voice = VoiceGuide(application)
+    private val progressRepository = ProgressRepository(application)
 
     private val _state = MutableStateFlow(SessionUiState(totalExercises = exercises.size))
     val state: StateFlow<SessionUiState> = _state.asStateFlow()
@@ -49,6 +51,7 @@ class ExerciseSessionViewModel(
                 currentIndex++
             }
             _state.update { it.copy(status = SessionStatus.FINISHED) }
+            progressRepository.recordCompletionToday()
             voice.speakAndWait("Great job. You've completed today's session.")
         }
     }
@@ -133,6 +136,7 @@ class ExerciseSessionViewModel(
         sessionJob?.cancel()
         voice.stop()
         _state.update { it.copy(status = SessionStatus.FINISHED) }
+        viewModelScope.launch { progressRepository.recordCompletionToday() }
     }
 
     override fun onCleared() {
