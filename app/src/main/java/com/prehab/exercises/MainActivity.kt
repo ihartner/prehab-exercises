@@ -9,12 +9,14 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.prehab.exercises.ui.calendar.CalendarScreen
 import com.prehab.exercises.ui.home.HomeScreen
 import com.prehab.exercises.ui.session.ExerciseSessionScreen
 import com.prehab.exercises.ui.theme.PrehabExercisesTheme
 
 private const val ROUTE_HOME = "home"
 private const val ROUTE_SESSION = "session/{startIndex}"
+private const val ROUTE_CALENDAR = "calendar"
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -28,8 +30,14 @@ class MainActivity : ComponentActivity() {
                         HomeScreen(
                             onStartSession = { startIndex ->
                                 navController.navigate("session/$startIndex")
+                            },
+                            onOpenCalendar = {
+                                navController.navigate(ROUTE_CALENDAR)
                             }
                         )
+                    }
+                    composable(ROUTE_CALENDAR) {
+                        CalendarScreen(onBack = { navController.popBackStack() })
                     }
                     composable(
                         route = ROUTE_SESSION,
