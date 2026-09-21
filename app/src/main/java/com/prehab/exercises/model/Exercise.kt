@@ -17,5 +17,6 @@ data class Exercise(
     val reps: Int = 0,
     val holdSeconds: Int = 4,
     val restSeconds: Int = 3,
-    val durationSeconds: Int = 0
+    val durationSeconds: Int = 0,
+    val imageRes: Int? = null
 )

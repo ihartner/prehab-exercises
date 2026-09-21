@@ -1,5 +1,6 @@
 package com.prehab.exercises.data
 
+import com.prehab.exercises.R
 import com.prehab.exercises.model.Exercise
 import com.prehab.exercises.model.ExercisePhase.LYING
 import com.prehab.exercises.model.ExercisePhase.SITTING
@@ -24,8 +25,9 @@ object ExerciseRepository {
                 "Bend your ankle to move one foot up and down. Then do the other foot."
             ),
             reps = 10,
-            holdSeconds = 1,
-            restSeconds = 1
+            holdSeconds = 3,
+            restSeconds = 3,
+            imageRes = R.drawable.ex_1
         ),
         Exercise(
             id = 2,
@@ -38,8 +40,9 @@ object ExerciseRepository {
                 "Tighten the muscles in front of your thigh and push the back of your knee into the bed."
             ),
             reps = 5,
-            holdSeconds = 4,
-            restSeconds = 3
+            holdSeconds = 6,
+            restSeconds = 5,
+            imageRes = R.drawable.ex_2
         ),
         Exercise(
             id = 3,
@@ -51,8 +54,9 @@ object ExerciseRepository {
                 "Straighten your leg, lifting your foot off the bed."
             ),
             reps = 5,
-            holdSeconds = 4,
-            restSeconds = 3
+            holdSeconds = 6,
+            restSeconds = 5,
+            imageRes = R.drawable.ex_3
         ),
         Exercise(
             id = 4,
@@ -64,8 +68,9 @@ object ExerciseRepository {
                 "Tighten your thigh muscles and lift your other leg, keeping the knee straight."
             ),
             reps = 5,
-            holdSeconds = 4,
-            restSeconds = 3
+            holdSeconds = 6,
+            restSeconds = 5,
+            imageRes = R.drawable.ex_4
         ),
         Exercise(
             id = 5,
@@ -78,7 +83,8 @@ object ExerciseRepository {
             ),
             reps = 5,
             holdSeconds = 30,
-            restSeconds = 5
+            restSeconds = 8,
+            imageRes = R.drawable.ex_5
         ),
         Exercise(
             id = 6,
@@ -90,8 +96,9 @@ object ExerciseRepository {
                 "Slowly straighten your knee by sliding your heel back to the starting position."
             ),
             reps = 5,
-            holdSeconds = 4,
-            restSeconds = 3
+            holdSeconds = 6,
+            restSeconds = 5,
+            imageRes = R.drawable.ex_6
         ),
         Exercise(
             id = 7,
@@ -104,8 +111,9 @@ object ExerciseRepository {
                 "Squeeze the pelvic muscles that stop the flow of pee. Breathe normally while holding."
             ),
             reps = 5,
-            holdSeconds = 4,
-            restSeconds = 3
+            holdSeconds = 6,
+            restSeconds = 5,
+            imageRes = R.drawable.ex_7
         ),
         Exercise(
             id = 8,
@@ -129,8 +137,9 @@ object ExerciseRepository {
                 "Push up with both arms to lift yourself a few inches off the seat."
             ),
             reps = 5,
-            holdSeconds = 4,
-            restSeconds = 3
+            holdSeconds = 6,
+            restSeconds = 5,
+            imageRes = R.drawable.ex_9
         ),
         Exercise(
             id = 10,
@@ -142,8 +151,9 @@ object ExerciseRepository {
                 "Slowly slide your foot back as far as you can."
             ),
             reps = 5,
-            holdSeconds = 4,
-            restSeconds = 3
+            holdSeconds = 6,
+            restSeconds = 5,
+            imageRes = R.drawable.ex_10
         ),
         Exercise(
             id = 11,
@@ -155,8 +165,9 @@ object ExerciseRepository {
                 "Lift your foot and straighten your knee."
             ),
             reps = 5,
-            holdSeconds = 4,
-            restSeconds = 3
+            holdSeconds = 6,
+            restSeconds = 5,
+            imageRes = R.drawable.ex_11
         ),
         Exercise(
             id = 12,
@@ -168,8 +179,9 @@ object ExerciseRepository {
                 "Slowly bend your knee by lifting your heel towards your buttocks."
             ),
             reps = 5,
-            holdSeconds = 4,
-            restSeconds = 3
+            holdSeconds = 6,
+            restSeconds = 5,
+            imageRes = R.drawable.ex_12
         ),
         Exercise(
             id = 13,
@@ -181,8 +193,9 @@ object ExerciseRepository {
                 "Lift your knee, as if you were going up a step."
             ),
             reps = 5,
-            holdSeconds = 4,
-            restSeconds = 3
+            holdSeconds = 6,
+            restSeconds = 5,
+            imageRes = R.drawable.ex_13
         ),
         Exercise(
             id = 14,
@@ -194,8 +207,9 @@ object ExerciseRepository {
                 "Keeping your weight on your heels, slightly bend your knees so you can still see your toes. Stick your buttocks back like you are starting to sit down."
             ),
             reps = 5,
-            holdSeconds = 4,
-            restSeconds = 3
+            holdSeconds = 6,
+            restSeconds = 5,
+            imageRes = R.drawable.ex_14
         ),
         Exercise(
             id = 15,
@@ -207,8 +221,9 @@ object ExerciseRepository {
                 "Raise both heels off the ground, going up on your toes, then lower slowly."
             ),
             reps = 10,
-            holdSeconds = 2,
-            restSeconds = 2
+            holdSeconds = 3,
+            restSeconds = 3,
+            imageRes = R.drawable.ex_15
         )
     )
 }

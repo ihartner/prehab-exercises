@@ -88,6 +88,7 @@ class ExerciseSessionViewModel(
 
             if (rep < exercise.reps) {
                 _state.update { it.copy(stage = RepStage.REST) }
+                voice.speak("Rest")
                 countdown(exercise.restSeconds)
             }
         }

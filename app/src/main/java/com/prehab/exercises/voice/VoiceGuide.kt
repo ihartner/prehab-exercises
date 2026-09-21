@@ -14,10 +14,13 @@ import kotlin.coroutines.resume
  */
 class VoiceGuide(context: Context) {
 
+    @Volatile
+    private var isReady = false
     private val readyDeferred = CompletableDeferred<Boolean>()
     private val tts: TextToSpeech = TextToSpeech(context.applicationContext) { status ->
         val success = status == TextToSpeech.SUCCESS
         if (success) tts.language = Locale.getDefault()
+        isReady = success
         readyDeferred.complete(success)
     }
 
@@ -26,7 +29,7 @@ class VoiceGuide(context: Context) {
 
     /** Speaks [text] without waiting for it to finish. */
     fun speak(text: String) {
-        if (!readyDeferred.isCompleted || readyDeferred.getCompleted() != true) return
+        if (!isReady) return
         tts.speak(text, TextToSpeech.QUEUE_FLUSH, null, UUID.randomUUID().toString())
     }
 
@@ -52,7 +55,7 @@ class VoiceGuide(context: Context) {
     }
 
     fun stop() {
-        if (readyDeferred.isCompleted) tts.stop()
+        if (isReady) tts.stop()
     }
 
     fun shutdown() {

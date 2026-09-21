@@ -1,3 +1,5 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <style name="Theme.PrehabExercises" parent="android:Theme.Material.Light.NoActionBar" />
+    <style name="Theme.PrehabExercises" parent="android:Theme.Material.Light.NoActionBar">
+        <item name="android:windowBackground">@color/window_background</item>
+    </style>
 </resources>
