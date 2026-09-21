@@ -22,6 +22,12 @@ val Gray30 = Color(0xFF3F3F3F)
 val Gray90 = Color(0xFFE2E2E2)
 val Gray80 = Color(0xFFC4C4C4)
 
+// True neutral grays (no warm/beige tint) for exercise cards and image containers
+val NeutralGray96 = Color(0xFFF2F2F2)
+val NeutralGray88 = Color(0xFFE0E0E0)
+val NeutralGray24 = Color(0xFF2A2A2A)
+val NeutralGray36 = Color(0xFF3D3D3D)
+
 // Blue accent
 val Blue40 = Color(0xFF1E5FA8)
 val Blue30 = Color(0xFF123A66)
