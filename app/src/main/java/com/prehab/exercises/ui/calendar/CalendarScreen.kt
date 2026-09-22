@@ -115,8 +115,9 @@ fun CalendarScreen(onBack: () -> Unit) {
             }
 
             Spacer(modifier = Modifier.height(24.dp))
+            val dayWord = if (monthProgress.completedCount == 1) "day" else "days"
             Text(
-                text = "${monthProgress.completedCount} days completed this month",
+                text = "${monthProgress.completedCount} $dayWord completed this month",
                 style = MaterialTheme.typography.bodyLarge,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
