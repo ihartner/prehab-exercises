@@ -4,11 +4,17 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.prehab.exercises.reminder.ReminderNotifier
 import com.prehab.exercises.ui.breathing.BreathingScreen
 import com.prehab.exercises.ui.breathing.BreathingSessionScreen
 import com.prehab.exercises.ui.calendar.CalendarScreen
@@ -31,6 +37,19 @@ class MainActivity : ComponentActivity() {
         setContent {
             PrehabExercisesTheme {
                 val navController = rememberNavController()
+
+                // A breathing reminder opens the app straight into the Breathing section.
+                // The saved flag stops this re-running after a rotation or process restore.
+                var launchDestinationHandled by rememberSaveable { mutableStateOf(false) }
+                LaunchedEffect(Unit) {
+                    if (!launchDestinationHandled &&
+                        intent?.getStringExtra(ReminderNotifier.EXTRA_DESTINATION) == "breathing"
+                    ) {
+                        navController.navigate(ROUTE_BREATHING)
+                    }
+                    launchDestinationHandled = true
+                }
+
                 NavHost(navController = navController, startDestination = ROUTE_HOME) {
                     composable(ROUTE_HOME) {
                         HomeScreen(

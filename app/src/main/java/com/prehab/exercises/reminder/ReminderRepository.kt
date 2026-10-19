@@ -13,40 +13,69 @@ import java.time.DayOfWeek
 
 private val Context.reminderDataStore by preferencesDataStore(name = "reminder_settings")
 
-private val ENABLED = booleanPreferencesKey("enabled")
-private val FREQUENCY = stringPreferencesKey("frequency")
-private val DAY_OF_WEEK = intPreferencesKey("day_of_week")
-private val HOUR = intPreferencesKey("hour")
-private val MINUTE = intPreferencesKey("minute")
+private class ReminderKeys(
+    val enabled: Preferences.Key<Boolean>,
+    val frequency: Preferences.Key<String>,
+    val dayOfWeek: Preferences.Key<Int>,
+    val hour: Preferences.Key<Int>,
+    val minute: Preferences.Key<Int>
+)
 
-private fun Preferences.toReminderSettings(): ReminderSettings {
-    val defaults = ReminderSettings()
+// The exercise reminder keeps its original key names so existing saved settings still load.
+private val EXERCISE_KEYS = ReminderKeys(
+    enabled = booleanPreferencesKey("enabled"),
+    frequency = stringPreferencesKey("frequency"),
+    dayOfWeek = intPreferencesKey("day_of_week"),
+    hour = intPreferencesKey("hour"),
+    minute = intPreferencesKey("minute")
+)
+
+private val BREATHING_KEYS = ReminderKeys(
+    enabled = booleanPreferencesKey("breathing_enabled"),
+    frequency = stringPreferencesKey("breathing_frequency"),
+    dayOfWeek = intPreferencesKey("breathing_day_of_week"),
+    hour = intPreferencesKey("breathing_hour"),
+    minute = intPreferencesKey("breathing_minute")
+)
+
+private fun ReminderType.keys(): ReminderKeys = when (this) {
+    ReminderType.EXERCISE -> EXERCISE_KEYS
+    ReminderType.BREATHING -> BREATHING_KEYS
+}
+
+private fun Preferences.toReminderSettings(type: ReminderType): ReminderSettings {
+    val keys = type.keys()
+    val defaults = type.defaults
     return ReminderSettings(
-        enabled = this[ENABLED] ?: defaults.enabled,
-        frequency = this[FREQUENCY]
+        enabled = this[keys.enabled] ?: defaults.enabled,
+        frequency = this[keys.frequency]
             ?.let { runCatching { ReminderFrequency.valueOf(it) }.getOrNull() }
             ?: defaults.frequency,
-        dayOfWeek = this[DAY_OF_WEEK]?.let { DayOfWeek.of(it) } ?: defaults.dayOfWeek,
-        hour = this[HOUR] ?: defaults.hour,
-        minute = this[MINUTE] ?: defaults.minute
+        dayOfWeek = this[keys.dayOfWeek]?.let { DayOfWeek.of(it) } ?: defaults.dayOfWeek,
+        hour = this[keys.hour] ?: defaults.hour,
+        minute = this[keys.minute] ?: defaults.minute
     )
 }
 
 class ReminderRepository(private val context: Context) {
 
-    val settings: Flow<ReminderSettings> =
-        context.reminderDataStore.data.map { it.toReminderSettings() }
+    fun settings(type: ReminderType): Flow<ReminderSettings> =
+        context.reminderDataStore.data.map { it.toReminderSettings(type) }
 
     /** Applies [transform] to the stored settings atomically and returns the saved result. */
-    suspend fun update(transform: (ReminderSettings) -> ReminderSettings): ReminderSettings {
-        var saved = ReminderSettings()
+    suspend fun update(
+        type: ReminderType,
+        transform: (ReminderSettings) -> ReminderSettings
+    ): ReminderSettings {
+        var saved = type.defaults
         context.reminderDataStore.edit { prefs ->
-            saved = transform(prefs.toReminderSettings())
-            prefs[ENABLED] = saved.enabled
-            prefs[FREQUENCY] = saved.frequency.name
-            prefs[DAY_OF_WEEK] = saved.dayOfWeek.value
-            prefs[HOUR] = saved.hour
-            prefs[MINUTE] = saved.minute
+            saved = transform(prefs.toReminderSettings(type))
+            val keys = type.keys()
+            prefs[keys.enabled] = saved.enabled
+            prefs[keys.frequency] = saved.frequency.name
+            prefs[keys.dayOfWeek] = saved.dayOfWeek.value
+            prefs[keys.hour] = saved.hour
+            prefs[keys.minute] = saved.minute
         }
         return saved
     }

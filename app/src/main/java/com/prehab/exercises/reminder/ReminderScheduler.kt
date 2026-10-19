@@ -11,7 +11,7 @@ import java.time.temporal.TemporalAdjusters
 object ReminderScheduler {
 
     const val ACTION_REMIND = "com.prehab.exercises.ACTION_REMIND"
-    private const val REQUEST_CODE = 1001
+    const val EXTRA_TYPE = "reminder_type"
 
     /** The next moment the reminder should fire, strictly after [now]. */
     fun nextTrigger(settings: ReminderSettings, now: ZonedDateTime = ZonedDateTime.now()): ZonedDateTime {
@@ -34,25 +34,28 @@ object ReminderScheduler {
      * Uses an inexact alarm so no exact-alarm permission is needed; delivery can drift a few
      * minutes when the device is dozing.
      */
-    fun schedule(context: Context, settings: ReminderSettings) {
+    fun schedule(context: Context, type: ReminderType, settings: ReminderSettings) {
         if (!settings.enabled) {
-            cancel(context)
+            cancel(context, type)
             return
         }
         val alarmManager = context.getSystemService(AlarmManager::class.java)
         val triggerAtMillis = nextTrigger(settings).toInstant().toEpochMilli()
-        alarmManager.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, triggerAtMillis, pendingIntent(context))
+        alarmManager.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, triggerAtMillis, pendingIntent(context, type))
     }
 
-    fun cancel(context: Context) {
-        context.getSystemService(AlarmManager::class.java).cancel(pendingIntent(context))
+    fun cancel(context: Context, type: ReminderType) {
+        context.getSystemService(AlarmManager::class.java).cancel(pendingIntent(context, type))
     }
 
-    private fun pendingIntent(context: Context): PendingIntent {
-        val intent = Intent(context, ReminderReceiver::class.java).setAction(ACTION_REMIND)
+    // PendingIntents are told apart by request code (extras are ignored), so each type needs its own.
+    private fun pendingIntent(context: Context, type: ReminderType): PendingIntent {
+        val intent = Intent(context, ReminderReceiver::class.java)
+            .setAction(ACTION_REMIND)
+            .putExtra(EXTRA_TYPE, type.name)
         return PendingIntent.getBroadcast(
             context,
-            REQUEST_CODE,
+            type.requestCode,
             intent,
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )

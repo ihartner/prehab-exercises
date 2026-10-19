@@ -9,8 +9,8 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
 /**
- * Fires the reminder notification when the alarm goes off, and re-arms the next alarm.
- * Also re-arms after a reboot or app update, since both clear scheduled alarms.
+ * Fires a reminder notification when its alarm goes off, and re-arms the next alarm.
+ * Also re-arms every reminder after a reboot or app update, since both clear scheduled alarms.
  */
 class ReminderReceiver : BroadcastReceiver() {
 
@@ -19,11 +19,19 @@ class ReminderReceiver : BroadcastReceiver() {
         val pendingResult = goAsync()
         CoroutineScope(Dispatchers.Default).launch {
             try {
-                val settings = ReminderRepository(appContext).settings.first()
-                if (intent.action == ReminderScheduler.ACTION_REMIND && settings.enabled) {
-                    ReminderNotifier.show(appContext)
+                val repository = ReminderRepository(appContext)
+                if (intent.action == ReminderScheduler.ACTION_REMIND) {
+                    val type = intent.getStringExtra(ReminderScheduler.EXTRA_TYPE)
+                        ?.let { runCatching { ReminderType.valueOf(it) }.getOrNull() }
+                        ?: ReminderType.EXERCISE
+                    val settings = repository.settings(type).first()
+                    if (settings.enabled) ReminderNotifier.show(appContext, type)
+                    ReminderScheduler.schedule(appContext, type, settings)
+                } else {
+                    ReminderType.entries.forEach { type ->
+                        ReminderScheduler.schedule(appContext, type, repository.settings(type).first())
+                    }
                 }
-                ReminderScheduler.schedule(appContext, settings)
             } finally {
                 pendingResult.finish()
             }

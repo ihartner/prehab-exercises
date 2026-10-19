@@ -7,6 +7,7 @@ import com.prehab.exercises.reminder.ReminderNotifier
 import com.prehab.exercises.reminder.ReminderRepository
 import com.prehab.exercises.reminder.ReminderScheduler
 import com.prehab.exercises.reminder.ReminderSettings
+import com.prehab.exercises.reminder.ReminderType
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
@@ -17,17 +18,20 @@ class SettingsViewModel(application: Application) : AndroidViewModel(application
     private val repository = ReminderRepository(application)
 
     /** Null until the stored settings have loaded, so the UI never flashes default values. */
-    val settings: StateFlow<ReminderSettings?> = repository.settings
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), null)
+    val exerciseSettings: StateFlow<ReminderSettings?> = settingsFor(ReminderType.EXERCISE)
+    val breathingSettings: StateFlow<ReminderSettings?> = settingsFor(ReminderType.BREATHING)
 
-    fun update(transform: (ReminderSettings) -> ReminderSettings) {
+    private fun settingsFor(type: ReminderType): StateFlow<ReminderSettings?> =
+        repository.settings(type).stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), null)
+
+    fun update(type: ReminderType, transform: (ReminderSettings) -> ReminderSettings) {
         viewModelScope.launch {
-            val saved = repository.update(transform)
-            ReminderScheduler.schedule(getApplication(), saved)
+            val saved = repository.update(type, transform)
+            ReminderScheduler.schedule(getApplication(), type, saved)
         }
     }
 
-    fun sendTestNotification() {
-        ReminderNotifier.show(getApplication())
+    fun sendTestNotification(type: ReminderType) {
+        ReminderNotifier.show(getApplication(), type)
     }
 }

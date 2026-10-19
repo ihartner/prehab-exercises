@@ -11,35 +11,39 @@ import com.prehab.exercises.R
 
 object ReminderNotifier {
 
-    private const val CHANNEL_ID = "exercise_reminders"
-    private const val NOTIFICATION_ID = 2001
+    const val EXTRA_DESTINATION = "destination"
 
     fun areNotificationsEnabled(context: Context): Boolean =
         context.getSystemService(NotificationManager::class.java).areNotificationsEnabled()
 
-    fun show(context: Context) {
+    fun show(context: Context, type: ReminderType) {
         val manager = context.getSystemService(NotificationManager::class.java)
         if (!manager.areNotificationsEnabled()) return
 
         manager.createNotificationChannel(
-            NotificationChannel(CHANNEL_ID, "Exercise reminders", NotificationManager.IMPORTANCE_DEFAULT)
+            NotificationChannel(type.channelId, type.channelName, NotificationManager.IMPORTANCE_DEFAULT)
         )
 
+        val launchIntent = Intent(context, MainActivity::class.java)
+            .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP)
+        type.destination?.let { launchIntent.putExtra(EXTRA_DESTINATION, it) }
+
+        // A distinct request code per type keeps one notification's extras from overwriting the other's.
         val openApp = PendingIntent.getActivity(
             context,
-            0,
-            Intent(context, MainActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP),
+            type.requestCode,
+            launchIntent,
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
 
-        val notification = Notification.Builder(context, CHANNEL_ID)
+        val notification = Notification.Builder(context, type.channelId)
             .setSmallIcon(R.drawable.ic_notification)
-            .setContentTitle("Time for your prehab exercises")
-            .setContentText("Tap to start today's session.")
+            .setContentTitle(type.title)
+            .setContentText(type.message)
             .setContentIntent(openApp)
             .setAutoCancel(true)
             .build()
 
-        manager.notify(NOTIFICATION_ID, notification)
+        manager.notify(type.notificationId, notification)
     }
 }

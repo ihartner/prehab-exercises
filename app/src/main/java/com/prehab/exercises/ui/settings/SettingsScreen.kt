@@ -32,7 +32,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SegmentedButton
 import androidx.compose.material3.SegmentedButtonDefaults
@@ -67,6 +66,7 @@ import com.prehab.exercises.reminder.ReminderFrequency
 import com.prehab.exercises.reminder.ReminderNotifier
 import com.prehab.exercises.reminder.ReminderScheduler
 import com.prehab.exercises.reminder.ReminderSettings
+import com.prehab.exercises.reminder.ReminderType
 import java.time.DayOfWeek
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
@@ -83,10 +83,10 @@ private val WEEK_ORDER = listOf(
 @Composable
 fun SettingsScreen(onBack: () -> Unit) {
     val viewModel: SettingsViewModel = viewModel()
-    val settings by viewModel.settings.collectAsStateWithLifecycle()
+    val exerciseSettings by viewModel.exerciseSettings.collectAsStateWithLifecycle()
+    val breathingSettings by viewModel.breathingSettings.collectAsStateWithLifecycle()
     val context = LocalContext.current
 
-    var showTimePicker by remember { mutableStateOf(false) }
     var notificationsAllowed by remember { mutableStateOf(ReminderNotifier.areNotificationsEnabled(context)) }
 
     LifecycleEventEffect(Lifecycle.Event.ON_RESUME) {
@@ -123,7 +123,8 @@ fun SettingsScreen(onBack: () -> Unit) {
         },
         containerColor = MaterialTheme.colorScheme.surface
     ) { innerPadding ->
-        val current = settings ?: return@Scaffold
+        val exercise = exerciseSettings ?: return@Scaffold
+        val breathing = breathingSettings ?: return@Scaffold
 
         Column(
             modifier = Modifier
@@ -132,119 +133,156 @@ fun SettingsScreen(onBack: () -> Unit) {
                 .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            SettingsCard {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Column(modifier = Modifier.weight(1f)) {
-                        Text("Exercise reminders", style = MaterialTheme.typography.titleMedium)
-                        Text(
-                            "Get a notification reminding you to do your exercises.",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                    }
-                    Switch(
-                        checked = current.enabled,
-                        onCheckedChange = { enabled ->
-                            viewModel.update { it.copy(enabled = enabled) }
-                            if (enabled && !notificationsAllowed) requestNotificationPermission()
-                        }
-                    )
-                }
-            }
-
-            if (current.enabled) {
+            if ((exercise.enabled || breathing.enabled) && !notificationsAllowed) {
                 SettingsCard {
-                    Text("Repeat", style = MaterialTheme.typography.labelLarge)
-                    Spacer(Modifier.height(8.dp))
-                    FrequencySelector(
-                        selected = current.frequency,
-                        onSelect = { frequency -> viewModel.update { it.copy(frequency = frequency) } }
-                    )
-
-                    if (current.frequency == ReminderFrequency.WEEKLY) {
-                        Spacer(Modifier.height(16.dp))
-                        Text("Day", style = MaterialTheme.typography.labelLarge)
-                        Spacer(Modifier.height(8.dp))
-                        DaySelector(
-                            selected = current.dayOfWeek,
-                            onSelect = { day -> viewModel.update { it.copy(dayOfWeek = day) } }
-                        )
-                    }
-
-                    Spacer(Modifier.height(16.dp))
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clickable { showTimePicker = true }
-                            .padding(vertical = 8.dp),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text("Time", style = MaterialTheme.typography.labelLarge)
-                        Text(
-                            text = formatTime(current.hour, current.minute),
-                            style = MaterialTheme.typography.titleMedium,
-                            color = MaterialTheme.colorScheme.primary,
-                            fontWeight = FontWeight.SemiBold
-                        )
-                    }
-
-                    Spacer(Modifier.height(8.dp))
                     Text(
-                        text = "Next reminder: ${formatNextReminder(current)}",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                        "Notifications are turned off for this app, so reminders won't appear.",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.error
                     )
-                }
-
-                if (!notificationsAllowed) {
-                    SettingsCard {
-                        Text(
-                            "Notifications are turned off for this app, so reminders won't appear.",
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.error
-                        )
-                        TextButton(onClick = {
-                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                                requestNotificationPermission()
-                            }
-                            context.startActivity(
-                                Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS)
-                                    .putExtra(Settings.EXTRA_APP_PACKAGE, context.packageName)
-                                    .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                            )
-                        }) {
-                            Text("Open notification settings")
+                    TextButton(onClick = {
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                            requestNotificationPermission()
                         }
+                        context.startActivity(
+                            Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS)
+                                .putExtra(Settings.EXTRA_APP_PACKAGE, context.packageName)
+                                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                        )
+                    }) {
+                        Text("Open notification settings")
                     }
-                }
-
-                OutlinedButton(
-                    onClick = {
-                        if (notificationsAllowed) viewModel.sendTestNotification() else requestNotificationPermission()
-                    },
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Text("Send test notification")
                 }
             }
-        }
 
-        if (showTimePicker) {
-            ReminderTimePickerDialog(
-                initialHour = current.hour,
-                initialMinute = current.minute,
-                onDismiss = { showTimePicker = false },
-                onConfirm = { hour, minute ->
-                    showTimePicker = false
-                    viewModel.update { it.copy(hour = hour, minute = minute) }
+            ReminderSection(
+                title = "Exercise reminders",
+                description = "Get a notification reminding you to do your prehab exercises.",
+                settings = exercise,
+                onToggle = { enabled ->
+                    viewModel.update(ReminderType.EXERCISE) { it.copy(enabled = enabled) }
+                    if (enabled && !notificationsAllowed) requestNotificationPermission()
+                },
+                onUpdate = { transform -> viewModel.update(ReminderType.EXERCISE, transform) },
+                onSendTest = {
+                    if (notificationsAllowed) {
+                        viewModel.sendTestNotification(ReminderType.EXERCISE)
+                    } else {
+                        requestNotificationPermission()
+                    }
+                }
+            )
+
+            ReminderSection(
+                title = "Breathing reminders",
+                description = "Get a notification reminding you to take a guided breathing break.",
+                settings = breathing,
+                onToggle = { enabled ->
+                    viewModel.update(ReminderType.BREATHING) { it.copy(enabled = enabled) }
+                    if (enabled && !notificationsAllowed) requestNotificationPermission()
+                },
+                onUpdate = { transform -> viewModel.update(ReminderType.BREATHING, transform) },
+                onSendTest = {
+                    if (notificationsAllowed) {
+                        viewModel.sendTestNotification(ReminderType.BREATHING)
+                    } else {
+                        requestNotificationPermission()
+                    }
                 }
             )
         }
+    }
+}
+
+/** A reminder's on/off switch and, when on, its daily/weekly, day, and time options. */
+@Composable
+private fun ReminderSection(
+    title: String,
+    description: String,
+    settings: ReminderSettings,
+    onToggle: (Boolean) -> Unit,
+    onUpdate: ((ReminderSettings) -> ReminderSettings) -> Unit,
+    onSendTest: () -> Unit
+) {
+    var showTimePicker by remember { mutableStateOf(false) }
+
+    SettingsCard {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Column(modifier = Modifier.weight(1f)) {
+                Text(title, style = MaterialTheme.typography.titleMedium)
+                Text(
+                    description,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+            Switch(checked = settings.enabled, onCheckedChange = onToggle)
+        }
+
+        if (settings.enabled) {
+            Spacer(Modifier.height(16.dp))
+            Text("Repeat", style = MaterialTheme.typography.labelLarge)
+            Spacer(Modifier.height(8.dp))
+            FrequencySelector(
+                selected = settings.frequency,
+                onSelect = { frequency -> onUpdate { it.copy(frequency = frequency) } }
+            )
+
+            if (settings.frequency == ReminderFrequency.WEEKLY) {
+                Spacer(Modifier.height(16.dp))
+                Text("Day", style = MaterialTheme.typography.labelLarge)
+                Spacer(Modifier.height(8.dp))
+                DaySelector(
+                    selected = settings.dayOfWeek,
+                    onSelect = { day -> onUpdate { it.copy(dayOfWeek = day) } }
+                )
+            }
+
+            Spacer(Modifier.height(16.dp))
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable { showTimePicker = true }
+                    .padding(vertical = 8.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text("Time", style = MaterialTheme.typography.labelLarge)
+                Text(
+                    text = formatTime(settings.hour, settings.minute),
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.primary,
+                    fontWeight = FontWeight.SemiBold
+                )
+            }
+
+            Spacer(Modifier.height(8.dp))
+            Text(
+                text = "Next reminder: ${formatNextReminder(settings)}",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+
+            TextButton(onClick = onSendTest) {
+                Text("Send test notification")
+            }
+        }
+    }
+
+    if (showTimePicker) {
+        ReminderTimePickerDialog(
+            initialHour = settings.hour,
+            initialMinute = settings.minute,
+            onDismiss = { showTimePicker = false },
+            onConfirm = { hour, minute ->
+                showTimePicker = false
+                onUpdate { it.copy(hour = hour, minute = minute) }
+            }
+        )
     }
 }
 
