@@ -23,6 +23,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material.icons.filled.SelfImprovement
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.AssistChipDefaults
@@ -66,7 +67,8 @@ import com.prehab.exercises.ui.theme.icon
 fun HomeScreen(
     onStartSession: (startIndex: Int) -> Unit,
     onOpenCalendar: () -> Unit,
-    onOpenSettings: () -> Unit
+    onOpenSettings: () -> Unit,
+    onOpenBreathing: () -> Unit
 ) {
     val exercises = ExerciseRepository.all
     val homeViewModel: HomeViewModel = viewModel()
@@ -86,6 +88,16 @@ fun HomeScreen(
                             expanded = menuExpanded,
                             onDismissRequest = { menuExpanded = false }
                         ) {
+                            DropdownMenuItem(
+                                text = { Text("Breathing") },
+                                leadingIcon = {
+                                    Icon(Icons.Filled.SelfImprovement, contentDescription = null)
+                                },
+                                onClick = {
+                                    menuExpanded = false
+                                    onOpenBreathing()
+                                }
+                            )
                             DropdownMenuItem(
                                 text = { Text("Calendar") },
                                 leadingIcon = {

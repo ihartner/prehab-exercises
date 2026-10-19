@@ -48,6 +48,12 @@ class VoiceGuide(context: Context) {
                 override fun onError(utteranceId: String?) {
                     if (continuation.isActive) continuation.resume(Unit)
                 }
+
+                // tts.stop() reports onStop, not onDone, so without this a stopped utterance
+                // would leave the caller suspended forever.
+                override fun onStop(utteranceId: String?, interrupted: Boolean) {
+                    if (continuation.isActive) continuation.resume(Unit)
+                }
             })
             tts.speak(text, TextToSpeech.QUEUE_FLUSH, null, utteranceId)
             continuation.invokeOnCancellation { tts.stop() }

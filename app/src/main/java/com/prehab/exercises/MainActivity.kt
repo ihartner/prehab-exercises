@@ -9,6 +9,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.prehab.exercises.ui.breathing.BreathingScreen
+import com.prehab.exercises.ui.breathing.BreathingSessionScreen
 import com.prehab.exercises.ui.calendar.CalendarScreen
 import com.prehab.exercises.ui.home.HomeScreen
 import com.prehab.exercises.ui.session.ExerciseSessionScreen
@@ -19,6 +21,8 @@ private const val ROUTE_HOME = "home"
 private const val ROUTE_SESSION = "session/{startIndex}"
 private const val ROUTE_CALENDAR = "calendar"
 private const val ROUTE_SETTINGS = "settings"
+private const val ROUTE_BREATHING = "breathing"
+private const val ROUTE_BREATHING_SESSION = "breathing/{exerciseId}"
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -38,7 +42,25 @@ class MainActivity : ComponentActivity() {
                             },
                             onOpenSettings = {
                                 navController.navigate(ROUTE_SETTINGS)
+                            },
+                            onOpenBreathing = {
+                                navController.navigate(ROUTE_BREATHING)
                             }
+                        )
+                    }
+                    composable(ROUTE_BREATHING) {
+                        BreathingScreen(
+                            onBack = { navController.popBackStack() },
+                            onOpenExercise = { id -> navController.navigate("breathing/$id") }
+                        )
+                    }
+                    composable(
+                        route = ROUTE_BREATHING_SESSION,
+                        arguments = listOf(navArgument("exerciseId") { type = NavType.IntType })
+                    ) { backStackEntry ->
+                        BreathingSessionScreen(
+                            exerciseId = backStackEntry.arguments?.getInt("exerciseId") ?: 1,
+                            onExit = { navController.popBackStack() }
                         )
                     }
                     composable(ROUTE_CALENDAR) {
