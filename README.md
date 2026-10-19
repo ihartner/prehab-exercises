@@ -41,6 +41,10 @@ preinstalled on Pixel devices) — no extra permissions or setup needed.
   from one phase to the next, it announces the transition (e.g. "Now let's
   move on to the sitting exercises... have a seat in a steady chair").
 - Pause/Resume, Skip, and End Session controls are available throughout.
+- **Settings → Exercise reminders** (hamburger menu): turn on a daily or weekly
+  notification, pick the weekday for weekly, and pick the time. Reminders use inexact
+  alarms (no exact-alarm permission needed), so a notification can arrive a few minutes
+  late when the phone is dozing. Alarms are re-armed after a reboot or app update.
 
 ## Project structure
 

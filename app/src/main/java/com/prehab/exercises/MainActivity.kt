@@ -12,11 +12,13 @@ import androidx.navigation.navArgument
 import com.prehab.exercises.ui.calendar.CalendarScreen
 import com.prehab.exercises.ui.home.HomeScreen
 import com.prehab.exercises.ui.session.ExerciseSessionScreen
+import com.prehab.exercises.ui.settings.SettingsScreen
 import com.prehab.exercises.ui.theme.PrehabExercisesTheme
 
 private const val ROUTE_HOME = "home"
 private const val ROUTE_SESSION = "session/{startIndex}"
 private const val ROUTE_CALENDAR = "calendar"
+private const val ROUTE_SETTINGS = "settings"
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -33,11 +35,17 @@ class MainActivity : ComponentActivity() {
                             },
                             onOpenCalendar = {
                                 navController.navigate(ROUTE_CALENDAR)
+                            },
+                            onOpenSettings = {
+                                navController.navigate(ROUTE_SETTINGS)
                             }
                         )
                     }
                     composable(ROUTE_CALENDAR) {
                         CalendarScreen(onBack = { navController.popBackStack() })
+                    }
+                    composable(ROUTE_SETTINGS) {
+                        SettingsScreen(onBack = { navController.popBackStack() })
                     }
                     composable(
                         route = ROUTE_SESSION,

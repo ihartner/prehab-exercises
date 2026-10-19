@@ -23,6 +23,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.AssistChipDefaults
 import androidx.compose.material3.Button
@@ -64,7 +65,8 @@ import com.prehab.exercises.ui.theme.icon
 @Composable
 fun HomeScreen(
     onStartSession: (startIndex: Int) -> Unit,
-    onOpenCalendar: () -> Unit
+    onOpenCalendar: () -> Unit,
+    onOpenSettings: () -> Unit
 ) {
     val exercises = ExerciseRepository.all
     val homeViewModel: HomeViewModel = viewModel()
@@ -92,6 +94,16 @@ fun HomeScreen(
                                 onClick = {
                                     menuExpanded = false
                                     onOpenCalendar()
+                                }
+                            )
+                            DropdownMenuItem(
+                                text = { Text("Settings") },
+                                leadingIcon = {
+                                    Icon(Icons.Filled.Settings, contentDescription = null)
+                                },
+                                onClick = {
+                                    menuExpanded = false
+                                    onOpenSettings()
                                 }
                             )
                         }
