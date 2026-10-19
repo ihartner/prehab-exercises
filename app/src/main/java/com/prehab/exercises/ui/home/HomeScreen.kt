@@ -78,7 +78,7 @@ fun HomeScreen(
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
-                title = { Text("Prehab Exercises", fontWeight = FontWeight.SemiBold) },
+                title = { Text("Work", fontWeight = FontWeight.SemiBold) },
                 navigationIcon = {
                     Box {
                         IconButton(onClick = { menuExpanded = true }) {

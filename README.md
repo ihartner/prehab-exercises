@@ -1,5 +1,8 @@
 # Prehab Exercises
 
+> The app's display name is **Work** (the launcher label and the Home title). The repo,
+> package (`com.prehab.exercises`), and project names are unchanged.
+
 Android app that guides someone through a pre-surgery "prehab" exercise plan,
 transcribed from `PREhab exercises.pdf`. Exercises are spoken aloud with a
 built-in timer, and progress in order from **lying → sitting → standing**,
