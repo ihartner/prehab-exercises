@@ -45,6 +45,10 @@ preinstalled on Pixel devices) — no extra permissions or setup needed.
   notification, pick the weekday for weekly, and pick the time. Reminders use inexact
   alarms (no exact-alarm permission needed), so a notification can arrive a few minutes
   late when the phone is dozing. Alarms are re-armed after a reboot or app update.
+- **Breathing** (hamburger menu): five guided techniques for grounding and relaxing — Box
+  Breathing, 4-7-8, Belly Breathing, Coherent Breathing (5-5), and the Physiological Sigh.
+  Each runs as an animated circle with spoken phase cues, pause/resume, and a voice mute
+  toggle. It's separate from the prehab plan and doesn't count toward the weekly goal.
 
 ## Project structure
 
