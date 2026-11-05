@@ -4,10 +4,10 @@
 > package (`com.prehab.exercises`), and project names are unchanged.
 
 Android app that guides someone through a pre-surgery "prehab" exercise plan,
-transcribed from `PREhab exercises.pdf`. Exercises are spoken aloud with a
-built-in timer, and progress in order from **lying → sitting → standing**,
-matching how the source plan is structured (exercises 1–8 lying, 9–11 sitting,
-12–15 standing).
+adapted from `PREhab exercises.pdf`. Exercises are spoken aloud with a
+built-in timer, and progress in order from **sitting → standing** (4 sitting
+exercises, then 4 standing). The plan originally started with a lying-down phase;
+that phase was removed, and Thigh Lifts was moved into the sitting section.
 
 ## Stack
 
@@ -62,7 +62,7 @@ preinstalled on Pixel devices) — no extra permissions or setup needed.
 app/src/main/java/com/prehab/exercises/
   MainActivity.kt              # NavHost: home <-> session
   model/Exercise.kt            # Exercise, ExercisePhase, ExerciseType
-  data/ExerciseRepository.kt   # the 15 exercises transcribed from the PDF
+  data/ExerciseRepository.kt   # the 8 exercises (sitting, then standing)
   voice/VoiceGuide.kt          # TextToSpeech wrapper (speak / speakAndWait)
   session/
     ExerciseSessionViewModel.kt  # timer + voice sequencing state machine

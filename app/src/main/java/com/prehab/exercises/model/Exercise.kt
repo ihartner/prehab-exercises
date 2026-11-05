@@ -1,7 +1,6 @@
 package com.prehab.exercises.model
 
 enum class ExercisePhase(val displayName: String, val positionCue: String) {
-    LYING("Lying", "Lie down on a firm, flat surface such as a bed or mat."),
     SITTING("Sitting", "Have a seat in a steady chair with your feet flat on the floor."),
     STANDING("Standing", "Stand up. Hold on to a table or counter for support.")
 }
