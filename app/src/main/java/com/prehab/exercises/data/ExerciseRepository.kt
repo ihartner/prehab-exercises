@@ -25,7 +25,7 @@ object ExerciseRepository {
             reps = 5,
             holdSeconds = 6,
             restSeconds = 5,
-            imageRes = R.drawable.ex_4
+            imageRes = R.drawable.ex_11
         ),
         Exercise(
             id = 9,
